@@ -5,10 +5,12 @@
 #include <queue>
 #include <stack>
 
+#define X_OVR
+
 namespace ww {
 
 template<typename T>
-class BinarySearchTree
+class BinaryTree
 {
 public:
     typedef T key_type;
@@ -20,94 +22,29 @@ public:
         Node* left;
         Node* right;
     };
-
-    BinarySearchTree() : root_(NULL) {}
-    ~BinarySearchTree() 
+    
+    typedef std::pair<Node*, Node*> NodePair;
+    
+    BinaryTree() : root_(NULL) {}
+    virtual ~BinaryTree() 
     {
         clear();
     }
-
-    void insert(const key_type& key)
+    
+    //
+    // Modifiers
+    //
+    virtual void insert(const key_type& key)
     {
-        if (NULL == root_)
-        {
-            root_ = new Node(key);
-        }
-        Node* node = root_;
-        while (true)
-        {
-            if (key < node->key) // Pass to the left
-            {
-                if (NULL == node->left) // Found slot
-                {
-                    node->left = new Node(key);
-                    break;
-                }
-                else
-                    node = node->left; // Keep going
-            }
-            else if (key > node->key) // Pass to the right
-            {
-                if (NULL == node->right) // Found slot
-                {
-                    node->right = new Node(key);
-                    break;
-                }
-                else
-                    node = node->right; // Keep going
-            }
-            else // Equal to current node, skip inserting
-            {
-                break;
-            }
-        }
+        // TODO
     }
-
-    Node* find_node(const key_type& key)
+    
+    virtual void erase(const key_type& key)
     {
-        Node* node = root_;
-        while (node != NULL)
-        {
-            if (key < node->key)
-            {
-                node = node->left;
-            }
-            else if (key > node->key)
-            {
-                node = node->right;
-            }
-            else // Found it
-            {
-                break;
-            }
-        }
-        return node;
-    }
-
-    void erase(const key_type& key)
-    {
-        // Find target node
-        Node* node = root_;
-        Node* parent = NULL;
-        while (node != NULL)
-        {
-            if (key < node->key)
-            {
-                parent = node;
-                node = node->left;
-            }
-            else if (key > node->key)
-            {
-                parent = node;
-                node = node->right;
-            }
-            else
-                break;
-        }
-        // Skip if not found
-        if (NULL == node)
+        NodePair np = find_node_and_parent(key);
+        if (NULL == np.first) // Skip if not found
             return;
-        delete_node(node, parent);
+        delete_node(np.first, np.second);
     }
     
     void clear()
@@ -117,7 +54,7 @@ public:
         std::queue<Node*> nodes;
         nodes.push(root_);
         Node* node = NULL;
-        while(!nodes.empty())
+        while (!nodes.empty())
         {
             node = nodes.front();
             if (node->left != NULL)
@@ -130,6 +67,14 @@ public:
         root_ = NULL;
     }
 
+    //
+    // Operations
+    //
+    virtual Node* find_node(const key_type& key)
+    {
+        return NULL; // TODO
+    }
+    
     void preorder_traversal(std::ostream& outs=std::cout) const
     {
         if (NULL == root_)
@@ -232,16 +177,21 @@ public:
                 nodes.push(node->right);
         }
     }
-
+    
+    //
+    // Capacity, Attributes
+    //
+    bool empty() { return NULL == root_; }
+    
     Node* root() { return root_; }
     
-    std::pair<Node*, Node*> deepest_node_and_parent()
+    NodePair deepest_node_and_parent()
     {
         if (NULL == root_)
-            return std::pair<Node*, Node*>(NULL, NULL);
+            return NodePair(NULL, NULL);
 
-        std::queue<std::pair<Node*, Node*> > nodes;
-        nodes.push(std::pair<Node*, Node*>(root_, NULL));
+        std::queue<NodePair> nodes;
+        nodes.push(NodePair(root_, NULL));
         Node* node = NULL;
         Node* parent = NULL;
         while (!nodes.empty())
@@ -250,16 +200,100 @@ public:
             parent = nodes.front().second;
             nodes.pop();
             if (node->left != NULL)
-                nodes.push(std::pair<Node*, Node*>(node->left, node));
+                nodes.push(NodePair(node->left, node));
             if (node->right != NULL)
-                nodes.push(std::pair<Node*, Node*>(node->right, node));
+                nodes.push(NodePair(node->right, node));
         }
 
-        return std::make_pair(node, parent);
+        return NodePair(node, parent);
+    }
+    
+protected:
+    virtual NodePair find_node_and_parent(const key_type& key)
+    {
+        // TODO
+        return NodePair(NULL, NULL);
+    }
+    
+    virtual void delete_node(Node* node, Node* parent)
+    {
+        // TODO
+    }
+    
+    void set_root(Node* node) { root_ = node; }
+
+private: 
+    Node* root_;
+};
+
+
+
+template <typename T>
+class BinarySearchTree : public BinaryTree<T>
+{
+public:
+    typedef T key_type;
+    typedef BinaryTree<T> Parent;
+    typedef typename Parent::Node Node;
+    typedef typename Parent::NodePair NodePair;
+    
+    BinarySearchTree() : BinaryTree<T>() {}
+    ~BinarySearchTree() {}
+    
+    X_OVR void insert(const key_type& key)
+    {
+        if (NULL == this->root())
+        {
+            set_root(new Node(key));
+            return;
+        }
+        Node* node = this->root();
+        while (true)
+        {
+            if (key < node->key) // Pass to the left
+            {
+                if (NULL == node->left) // Found slot
+                {
+                    node->left = new Node(key);
+                    break;
+                }
+                else
+                    node = node->left; // Keep going
+            }
+            else if (key > node->key) // Pass to the right
+            {
+                if (NULL == node->right) // Found slot
+                {
+                    node->right = new Node(key);
+                    break;
+                }
+                else
+                    node = node->right; // Keep going
+            }
+            else // Equal to current node, skip inserting
+            {
+                break;
+            }
+        }
+    }
+    
+    X_OVR Node* find_node(const key_type& key)
+    {
+        Node* node = this->root();
+        while (node != NULL)
+        {
+            if (key < node->key)
+                node = node->left;
+            else if (key > node->key)
+                node = node->right;
+            else // Found it
+                break;
+        }
+        return node;
     }
 
 protected:
-    static void delete_node(Node* node, Node* parent)
+    X_OVR void delete_node(Node* node, Node* parent)
     {
         if (NULL == node)
             return;
@@ -328,8 +362,28 @@ protected:
         node->key = swap_node_key;
     }
     
-private:
-    Node* root_;
+    X_OVR NodePair find_node_and_parent(const key_type& key)
+    {
+        // Find target node
+        Node* node = this->root();
+        Node* parent = NULL;
+        while (node != NULL)
+        {
+            if (key < node->key)
+            {
+                parent = node;
+                node = node->left;
+            }
+            else if (key > node->key)
+            {
+                parent = node;
+                node = node->right;
+            }
+            else
+                break;
+        }
+        return NodePair(node, parent);
+    }
 };
 
 }
