@@ -1,3 +1,7 @@
+// 4.1
+// Implement a function to check if a tree is balanced.
+//
+
 #ifndef _CHAP4_CHECK_TREE_BALANCE_HPP_
 #define _CHAP4_CHECK_TREE_BALANCE_HPP_
 

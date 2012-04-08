@@ -66,6 +66,13 @@ public:
         }
         root_ = NULL;
     }
+    
+    void set_root(Node* node) 
+    {
+        if (NULL != root_)
+            clear();
+        root_ = node;
+    }
 
     //
     // Operations
@@ -219,8 +226,6 @@ protected:
     {
         // TODO
     }
-    
-    void set_root(Node* node) { root_ = node; }
 
 private: 
     Node* root_;
