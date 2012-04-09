@@ -15,17 +15,41 @@ class BinaryTree
 public:
     typedef T key_type;
 
-    struct Node
+    class Node
     {
+    public:
         Node(const key_type& key_in) : key(key_in), left(NULL), right(NULL) {}
+        virtual ~Node() {}
+                
         key_type key;
         Node* left;
         Node* right;
     };
     
+    class NodeWithParent : public Node
+    {
+    public:
+        NodeWithParent(const key_type& key) : Node(key), parent(NULL) {}
+        ~NodeWithParent() {}
+        
+        NodeWithParent* left_node() 
+        {
+            return dynamic_cast<NodeWithParent*>(this->left);
+        }
+        NodeWithParent* right_node() 
+        {
+            return dynamic_cast<NodeWithParent*>(this->right);
+        }
+
+        NodeWithParent* parent;
+    };
+    
     typedef std::pair<Node*, Node*> NodePair;
     
-    BinaryTree() : root_(NULL) {}
+    BinaryTree(bool enable_parent=false)
+        : enable_parent_(enable_parent), root_(NULL)
+    {
+    }
     virtual ~BinaryTree() 
     {
         clear();
@@ -36,6 +60,8 @@ public:
     //
     virtual void insert(const key_type& key)
     {
+        key_type key_copy; // To get rid of the compiler warning
+        key_copy = key;
         // TODO
     }
     
@@ -79,6 +105,8 @@ public:
     //
     virtual Node* find_node(const key_type& key)
     {
+        key_type key_copy; // To get rid of the compiler warning
+        key_copy = key;
         return NULL; // TODO
     }
     
@@ -218,14 +246,31 @@ public:
 protected:
     virtual NodePair find_node_and_parent(const key_type& key)
     {
-        // TODO
+        key_type key_copy = key; // To get rid of the compiler warning
+        key_copy = key;
         return NodePair(NULL, NULL);
     }
     
     virtual void delete_node(Node* node, Node* parent)
     {
-        // TODO
+        Node* node_copy = node; // To get rid of the compiler warning
+        Node* parent_copy = parent; // To get rid of the compiler warning
+        node_copy = node;
+        parent_copy = parent;
     }
+    
+    virtual Node* create_node(const key_type& key, Node* parent=NULL)
+    {
+        if (enable_parent_)
+        {
+            NodeWithParent* node = new NodeWithParent(key);
+            node->parent = dynamic_cast<NodeWithParent*>(parent);
+            return node;
+        }
+        return new Node(key);
+    }
+    
+    bool enable_parent_;
 
 private: 
     Node* root_;
@@ -242,14 +287,14 @@ public:
     typedef typename Parent::Node Node;
     typedef typename Parent::NodePair NodePair;
     
-    BinarySearchTree() : BinaryTree<T>() {}
+    BinarySearchTree(bool enable_parent=false) : BinaryTree<T>(enable_parent) {}
     ~BinarySearchTree() {}
     
     X_OVR void insert(const key_type& key)
     {
         if (NULL == this->root())
         {
-            set_root(new Node(key));
+            set_root(create_node(key, NULL));
             return;
         }
         Node* node = this->root();
@@ -259,7 +304,7 @@ public:
             {
                 if (NULL == node->left) // Found slot
                 {
-                    node->left = new Node(key);
+                    node->left = create_node(key, node);
                     break;
                 }
                 else
@@ -269,7 +314,7 @@ public:
             {
                 if (NULL == node->right) // Found slot
                 {
-                    node->right = new Node(key);
+                    node->right = create_node(key, node);
                     break;
                 }
                 else
