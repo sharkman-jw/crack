@@ -1,11 +1,10 @@
-#include "chap1_2_reverse.h"
-
 #include <iostream>
+#include "reverse_str.h"
 
 char* reverse_str(char* s)
 {
     if (NULL == s || 0 == *s)
-        return;
+        return s;
     
     char* p2 = s;
     while (*p2) 

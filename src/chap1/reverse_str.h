@@ -6,6 +6,6 @@
 // In place
 char* reverse_str(char* s);
 // Copy
-std::string reverse_str(const char* s); // TODO
+//std::string reverse_str(const char* s); // TODO
 
 #endif
