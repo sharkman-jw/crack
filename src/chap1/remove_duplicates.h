@@ -9,6 +9,6 @@
 
 char* remove_duplicate_chars(char* s); // No extra memory used
 
-char* remove_duplicate_chars2(char* s); // TODO: use extra memory version
+char* remove_duplicate_chars2(char* s); // Additional memory used
 
 #endif
