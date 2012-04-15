@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 
 namespace ww {
 
@@ -91,6 +92,24 @@ public:
         if (pos < capacity_)
             return data_[pos];
         throw std::runtime_error("Index out of range.");
+    }
+    
+    //
+    // Operations
+    //
+    void print() const
+    {
+        if (0 == capacity_)
+            return;
+        for (size_t pos = 0, c = 1; pos < capacity_; ++ pos, ++ c)
+        {
+            std::cout << data_[pos] << ' ';
+            if (c == cols_)
+            {
+                std::cout << std::endl;
+                c = 0;
+            }
+        }
     }
     
     //
