@@ -29,6 +29,7 @@ unsigned int cut_rod(unsigned int n)
     return cut_rod_core(n, p, r);
 }
 
+#if 0
 int main(int argc, char** argv)
 {
     if (argc == 2)
@@ -40,3 +41,4 @@ int main(int argc, char** argv)
         std::cout << cut_rod(i) << std::endl;
     return 0;
 }
+#endif
