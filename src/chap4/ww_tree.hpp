@@ -135,17 +135,20 @@ public:
         Node* node = root_;
         while (true)
         {
-            while (node != NULL)
+            if (node != NULL)
             {
-                nodes.push(node);
+                nodes.push(root);
                 node = node->left;
             }
-            if (nodes.empty())
-                break;
-            node = nodes.top();
-            nodes.pop();
-            outs << node->key << ',';
-            node = node->right;
+            else
+            {
+                if (nodes.empty())
+                    break;
+                node = nodes.top();
+                nodes.pop();
+                outs << node->key << ',';
+                node = node->right;
+            }
         }
     }
 
